@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Telemetry Dashboard</title>
+  <script src="https://cdn.socket.io/4.2.1/socket.io.min.js"></script>
+  <style>
+    body { font-family: Arial; background: #1e1e2f; color: #eee; text-align:center; padding-top:50px; }
+    .status { font-size:1.5em; margin-bottom:20px; }
+    .data { font-size:1.2em; }
+    .data span { display:block; margin:10px 0; }
+  </style>
+</head>
+<body>
+  <div class="status" id="status">🔄 Waiting for connection...</div>
+  <div class="data">
+    <span><strong>Steering Angle:</strong> <span id="angle">-</span></span>
+    <span><strong>Throttle:</strong> <span id="throttle">-</span></span>
+    <span><strong>Speed:</strong> <span id="speed">-</span></span>
+  </div>
+
+  <script>
+    const socket = io();  // connects to http://localhost:4567
+
+    socket.on('connect', () => {
+      document.getElementById('status').innerText = '✅ Connected';
+    });
+    socket.on('disconnect', () => {
+      document.getElementById('status').innerText = '❌ Disconnected';
+    });
+
+    socket.on('telemetry_data', (d) => {
+      document.getElementById('angle').innerText    = d.steering_angle.toFixed(4);
+      document.getElementById('throttle').innerText = d.throttle.toFixed(4);
+      document.getElementById('speed').innerText    = d.speed.toFixed(2);
+    });
+  </script>
+</body>
+</html>
